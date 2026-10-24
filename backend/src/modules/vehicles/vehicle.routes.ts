@@ -13,4 +13,6 @@ const controller = new VehicleController(
 export const vehicleRouter = Router();
 
 vehicleRouter.use(authenticate);
+vehicleRouter.get("/search", controller.search); // must stay before any '/:id' route
+vehicleRouter.get("/", controller.list);
 vehicleRouter.post("/", controller.create);

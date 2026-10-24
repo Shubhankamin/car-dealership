@@ -9,3 +9,22 @@ export const createVehicleSchema = z.object({
 });
 
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;
+
+export const searchVehicleSchema = z
+  .object({
+    make: z.string().trim().min(1).optional(),
+    model: z.string().trim().min(1).optional(),
+    category: z.string().trim().min(1).optional(),
+    // Query strings arrive as text, so coerce. "abc" becomes NaN and fails validation (400).
+    minPrice: z.coerce.number().min(0).optional(),
+    maxPrice: z.coerce.number().min(0).optional(),
+  })
+  .refine(
+    (q) =>
+      q.minPrice === undefined ||
+      q.maxPrice === undefined ||
+      q.minPrice <= q.maxPrice,
+    { message: "minPrice must not exceed maxPrice", path: ["minPrice"] },
+  );
+
+export type SearchVehicleInput = z.infer<typeof searchVehicleSchema>;
