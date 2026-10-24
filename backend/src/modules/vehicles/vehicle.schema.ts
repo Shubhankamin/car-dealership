@@ -36,3 +36,9 @@ export const updateVehicleSchema = createVehicleSchema
   });
 
 export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;
+
+export const restockSchema = z.object({
+  quantity: z.number().int().positive(),
+});
+
+export type RestockInput = z.infer<typeof restockSchema>;

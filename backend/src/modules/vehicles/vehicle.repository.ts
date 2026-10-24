@@ -8,6 +8,8 @@ export interface VehicleRepository {
   findById(id: string): Promise<Vehicle | null>;
   update(id: string, data: UpdateVehicleInput): Promise<Vehicle>;
   delete(id: string): Promise<void>;
+  decrementIfInStock(id: string): Promise<boolean>;
+  increment(id: string, amount: number): Promise<Vehicle>;
 }
 
 const defaultOrder: Prisma.VehicleOrderByWithRelationInput[] = [
@@ -51,5 +53,20 @@ export class PrismaVehicleRepository implements VehicleRepository {
 
   async delete(id: string) {
     await this.db.vehicle.delete({ where: { id } });
+  }
+
+  async decrementIfInStock(id: string) {
+    const result = await this.db.vehicle.updateMany({
+      where: { id, quantity: { gt: 0 } },
+      data: { quantity: { decrement: 1 } },
+    });
+    return result.count > 0;
+  }
+
+  increment(id: string, amount: number) {
+    return this.db.vehicle.update({
+      where: { id },
+      data: { quantity: { increment: amount } },
+    });
   }
 }

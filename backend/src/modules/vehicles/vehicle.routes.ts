@@ -18,3 +18,5 @@ vehicleRouter.get("/", controller.list);
 vehicleRouter.post("/", controller.create);
 vehicleRouter.put("/:id", controller.update);
 vehicleRouter.delete("/:id", authorize("ADMIN"), controller.remove);
+vehicleRouter.post("/:id/purchase", controller.purchase);
+vehicleRouter.post("/:id/restock", authorize("ADMIN"), controller.restock);

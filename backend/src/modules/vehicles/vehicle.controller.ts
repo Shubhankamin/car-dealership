@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { createVehicleSchema, searchVehicleSchema } from "./vehicle.schema";
 import { VehicleService } from "./vehicle.service";
 import { updateVehicleSchema } from "./vehicle.schema";
+import { restockSchema } from "./vehicle.schema";
 export class VehicleController {
   constructor(private readonly service: VehicleService) {}
 
@@ -44,6 +45,23 @@ export class VehicleController {
     try {
       await this.service.remove(String(req.params.id));
       res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  purchase = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.json(await this.service.purchase(String(req.params.id)));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  restock = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { quantity } = restockSchema.parse(req.body);
+      res.json(await this.service.restock(String(req.params.id), quantity));
     } catch (err) {
       next(err);
     }
