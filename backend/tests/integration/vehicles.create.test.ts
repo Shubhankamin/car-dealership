@@ -28,6 +28,29 @@ describe("POST /api/vehicles", () => {
     expect(res.status).toBe(401);
   });
 
+  it("stores an optional image path", async () => {
+    const { token } = await createUserWithToken("USER");
+
+    const res = await request(app)
+      .post("/api/vehicles")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...validVehicle, imageUrl: "/cars/camry.jpg" });
+
+    expect(res.status).toBe(201);
+    expect(res.body.imageUrl).toBe("/cars/camry.jpg");
+  });
+
+  it("rejects an image that is not an http(s) URL or a local path", async () => {
+    const { token } = await createUserWithToken("USER");
+
+    const res = await request(app)
+      .post("/api/vehicles")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...validVehicle, imageUrl: "javascript:alert(1)" });
+
+    expect(res.status).toBe(400);
+  });
+
   it("creates a vehicle for an authenticated user", async () => {
     const { token } = await createUserWithToken("USER");
 
