@@ -9,7 +9,7 @@ interface Props {
 }
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100";
+  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-indigo-100";
 
 const textFields: {
   key: keyof SearchFilters;
@@ -94,7 +94,7 @@ export default function SearchBar({
       <div className="flex items-end gap-2">
         <button
           type="submit"
-          className="flex-1 rounded-xl bg-indigo-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          className="flex-1 rounded-xl bg-orange-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
         >
           Search
         </button>
