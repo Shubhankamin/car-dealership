@@ -18,6 +18,7 @@ export interface Vehicle {
   category: string;
   price: number;
   quantity: number;
+  imageUrl?: string | null;
 }
 
 export type VehicleInput = Omit<Vehicle, "id">;
