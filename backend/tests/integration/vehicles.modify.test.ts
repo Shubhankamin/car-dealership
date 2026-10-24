@@ -70,6 +70,18 @@ describe("PUT /api/vehicles/:id", () => {
 
     expect(res.status).toBe(404);
   });
+
+  it("returns 404 for an unknown vehicle", async () => {
+    const { token } = await createUserWithToken("USER");
+
+    const res = await request(app)
+      .put("/api/vehicles/does-not-exist")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ price: 100 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Vehicle not found");
+  });
 });
 
 describe("DELETE /api/vehicles/:id", () => {
