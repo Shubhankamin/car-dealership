@@ -10,10 +10,10 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route element={<ProtectedRoute />}>
-        <Route
+        {/* <Route
           path="/"
           element={<p className="p-8">Dashboard coming next</p>}
-        />
+        /> */}
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/" element={<DashboardPage />} />
