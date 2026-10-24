@@ -6,6 +6,14 @@ export const createVehicleSchema = z.object({
   category: z.string().trim().min(1),
   price: z.number().positive(),
   quantity: z.number().int().min(0),
+  imageUrl: z
+    .string()
+    .trim()
+    .regex(
+      /^(https?:\/\/\S+|\/(?!\/)\S*)$/i,
+      "Image must be an http(s) URL or a path starting with /",
+    )
+    .optional(),
 });
 
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;

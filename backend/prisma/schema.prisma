@@ -16,6 +16,7 @@ model User {
 
 model Vehicle {
   id       String @id @default(uuid())
+  imageUrl String?
   make     String
   model    String
   category String
