@@ -24,3 +24,9 @@ export class ForbiddenError extends AppError {
     super(403, message);
   }
 }
+
+export class NotFoundError extends AppError {
+  constructor(message = "Resource not found") {
+    super(404, message);
+  }
+}

@@ -28,3 +28,11 @@ export const searchVehicleSchema = z
   );
 
 export type SearchVehicleInput = z.infer<typeof searchVehicleSchema>;
+
+export const updateVehicleSchema = createVehicleSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided",
+  });
+
+export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;

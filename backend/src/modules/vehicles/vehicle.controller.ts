@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createVehicleSchema, searchVehicleSchema } from "./vehicle.schema";
 import { VehicleService } from "./vehicle.service";
-
+import { updateVehicleSchema } from "./vehicle.schema";
 export class VehicleController {
   constructor(private readonly service: VehicleService) {}
 
@@ -26,6 +26,24 @@ export class VehicleController {
     try {
       const filters = searchVehicleSchema.parse(req.query);
       res.json(await this.service.search(filters));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const input = updateVehicleSchema.parse(req.body);
+      res.json(await this.service.update(String(req.params.id), input));
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  remove = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.service.remove(String(req.params.id));
+      res.status(204).send();
     } catch (err) {
       next(err);
     }
