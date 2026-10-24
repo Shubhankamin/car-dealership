@@ -42,4 +42,33 @@ describe("VehicleCard", () => {
     expect(screen.getByRole("button", { name: /purchase/i })).toBeDisabled();
     expect(screen.getByText(/out of stock/i)).toBeInTheDocument();
   });
+
+  it("shows the vehicle photo when one is provided", () => {
+    render(
+      <VehicleCard
+        vehicle={{ ...vehicle, imageUrl: "/cars/camry.jpg" }}
+        onPurchase={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("img", { name: "Toyota Camry" })).toHaveAttribute(
+      "src",
+      "/cars/camry.jpg",
+    );
+  });
+
+  it("calls onToggleFavorite with the vehicle id", async () => {
+    const onToggleFavorite = vi.fn();
+    render(
+      <VehicleCard
+        vehicle={vehicle}
+        onPurchase={vi.fn()}
+        onToggleFavorite={onToggleFavorite}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /favorites/i }));
+
+    expect(onToggleFavorite).toHaveBeenCalledWith("v1");
+  });
 });
