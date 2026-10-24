@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import AdminPage from "./pages/AdminPage";
 
 export default function App() {
   return (
@@ -14,9 +15,12 @@ export default function App() {
           path="/"
           element={<p className="p-8">Dashboard coming next</p>}
         /> */}
+        <Route path="/" element={<DashboardPage />} />
+      </Route>
+      <Route element={<ProtectedRoute adminOnly />}>
+        <Route path="/admin" element={<AdminPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
-      <Route path="/" element={<DashboardPage />} />
     </Routes>
   );
 }
