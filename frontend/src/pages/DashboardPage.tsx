@@ -4,10 +4,12 @@ import { purchaseVehicle, searchVehicles } from "../api/vehicles";
 import type { SearchFilters } from "../api/vehicles";
 import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
+import FilterSidebar from "../components/FilterSidebar";
 import VehicleCard from "../components/VehicleCard";
 import Loader from "../components/Loader";
 // import { useFavorites } from "../hooks/useFavorites";
 import type { Vehicle } from "../types";
+import { matchesKeyword } from "../utils/vehicleSearch";
 
 type Toast = {
   id: number;
@@ -25,15 +27,31 @@ export default function DashboardPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
+  // Keyword and stock filters run in the browser; category and price go to the API.
+  const [keyword, setKeyword] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestId = useRef(0);
 
   // const { isFavorite, toggle } = useFavorites();
 
-  const filtered = Object.values(filters).some(
-    (value) => typeof value === "string" && value.trim() !== "",
+  const visible = vehicles.filter(
+    (vehicle) =>
+      matchesKeyword(vehicle, keyword) && (!inStockOnly || vehicle.quantity > 0),
   );
+
+  const activeFilterCount =
+    (filters.category ? 1 : 0) +
+    (filters.minPrice || filters.maxPrice ? 1 : 0) +
+    (inStockOnly ? 1 : 0);
+
+  function clearAll() {
+    setFilters({});
+    setKeyword("");
+    setInStockOnly(false);
+  }
 
   const showToast = useCallback(
     (message: string, type: Toast["type"], detail?: string) => {
@@ -143,176 +161,159 @@ export default function DashboardPage() {
     <div className="min-h-screen text-gray-900">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-          <div>
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-orange-600">
-              <span className="h-2 w-2 rounded-full bg-orange-500" />
-              Dealership inventory
-            </div>
+      <main>
+        {/* Hero with the centred search */}
+        <section className="relative overflow-hidden border-b border-orange-100/60 bg-gradient-to-b from-orange-50 via-white to-transparent">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-orange-200/40 blur-3xl"
+          />
 
-            <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+          <div className="relative mx-auto max-w-3xl px-4 pb-14 pt-12 text-center sm:px-6 sm:pt-16">
+            <span className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-orange-600 shadow-sm backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+              Dealership inventory
+            </span>
+
+            <h1 className="mt-5 text-4xl font-bold tracking-tight text-gray-950 sm:text-5xl">
               Find your next ride.
             </h1>
 
-            <p className="mt-2 text-sm text-slate-500 sm:text-base">
+            <p className="mx-auto mt-3 max-w-xl text-base text-slate-500 sm:text-lg">
               Explore our collection and find the right vehicle for you.
             </p>
-          </div>
 
-          <div className="flex items-center gap-4 rounded-2xl border border-orange-100 bg-white px-5 py-4 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3 13l2-6h14l2 6M4 13h16v5H4zM7 18v2m10-2v2M6 10h12"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="7.5" cy="15.5" r=".7" fill="currentColor" />
-                <circle cx="16.5" cy="15.5" r=".7" fill="currentColor" />
-              </svg>
-            </div>
-
-            <div>
-              <p className="text-2xl font-bold tracking-tight">
-                {loading ? "—" : vehicles.length}
-              </p>
-              <p className="text-xs font-medium text-slate-500">
-                {filtered ? "Matching vehicles" : "Available listings"}
-              </p>
+            <div className="mt-8">
+              <SearchBar value={keyword} onChange={setKeyword} />
             </div>
           </div>
         </section>
 
-        <section className="rounded-2xl border border-orange-100 bg-white p-4 shadow-sm sm:p-6">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                aria-hidden="true"
-              >
-                <circle cx="10.5" cy="10.5" r="6.5" />
-                <path d="m16 16 4.5 4.5" strokeLinecap="round" />
-              </svg>
-            </div>
-
-            <div>
-              <h2 className="font-semibold text-gray-900">Search inventory</h2>
-              <p className="text-xs text-slate-500">
-                Filter by make, model, category, or budget.
-              </p>
-            </div>
-          </div>
-
-          <SearchBar
-            filters={filters}
-            categories={categories}
-            onChange={setFilters}
-            onSearch={() => void load(filters)}
-          />
-        </section>
-
-        {error && (
-          <div
-            role="alert"
-            className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
-          >
-            <span className="font-bold">!</span>
-
-            <div className="min-w-0 flex-1">{error}</div>
-
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8 lg:py-10">
+          <aside className="lg:sticky lg:top-24 lg:self-start">
             <button
               type="button"
-              onClick={() => setError(null)}
-              className="font-semibold hover:text-red-950"
-              aria-label="Dismiss error"
+              onClick={() => setShowFilters((open) => !open)}
+              aria-expanded={showFilters}
+              aria-controls="vehicle-filters"
+              className="flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-white px-5 py-3.5 text-sm font-semibold text-gray-900 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] lg:hidden"
             >
-              ✕
-            </button>
-          </div>
-        )}
-
-        <section>
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-gray-900">
-                Explore vehicles
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Find a vehicle that matches your needs.
-              </p>
-            </div>
-
-            {!loading && (
-              <span className="rounded-full border border-orange-100 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">
-                {vehicles.length} {vehicles.length === 1 ? "result" : "results"}
+              <span className="flex items-center gap-2">
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="rounded-full bg-orange-600 px-2 py-0.5 text-xs text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
               </span>
-            )}
-          </div>
+              <span aria-hidden="true">{showFilters ? "▲" : "▼"}</span>
+            </button>
 
-          {loading ? (
-            <Loader message="Loading vehicles..." />
-          ) : vehicles.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-orange-200 bg-white px-5 py-16 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-7 w-7"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  aria-hidden="true"
-                >
-                  <circle cx="10.5" cy="10.5" r="6.5" />
-                  <path d="m16 16 4.5 4.5" />
-                </svg>
+            <div
+              id="vehicle-filters"
+              className={`${showFilters ? "mt-3 block" : "hidden"} lg:mt-0 lg:block`}
+            >
+              <FilterSidebar
+                filters={filters}
+                categories={categories}
+                inStockOnly={inStockOnly}
+                onChange={setFilters}
+                onInStockChange={setInStockOnly}
+              />
+            </div>
+          </aside>
+
+          <section className="min-w-0 space-y-5">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-gray-900">
+                  Explore vehicles
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Find a vehicle that matches your needs.
+                </p>
               </div>
 
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">
-                No vehicles found
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Try changing your filters to see more results.
-              </p>
+              {!loading && (
+                <span className="rounded-full border border-orange-100 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm">
+                  {visible.length} {visible.length === 1 ? "result" : "results"}
+                </span>
+              )}
+            </div>
 
-              <button
-                type="button"
-                onClick={() => setFilters({})}
-                className="mt-5 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-500/20"
+            {error && (
+              <div
+                role="alert"
+                className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
               >
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <div className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {vehicles.map((vehicle) => (
-                <div
-                  key={vehicle.id}
-                  className="min-w-0 rounded-2xl transition duration-200 hover:-translate-y-0.5"
+                <span className="font-bold">!</span>
+
+                <div className="min-w-0 flex-1">{error}</div>
+
+                <button
+                  type="button"
+                  onClick={() => setError(null)}
+                  className="font-semibold hover:text-red-950"
+                  aria-label="Dismiss error"
                 >
-                  <VehicleCard
-                    vehicle={vehicle}
-                    onPurchase={() => setSelectedVehicle(vehicle)}
-                    busy={busyId === vehicle.id}
-                    // favorite={isFavorite(vehicle.id)}
-                    // onToggleFavorite={toggle}
-                  />
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {loading ? (
+              <Loader message="Loading vehicles..." />
+            ) : visible.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-orange-200 bg-white px-5 py-16 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-7 w-7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    aria-hidden="true"
+                  >
+                    <circle cx="10.5" cy="10.5" r="6.5" />
+                    <path d="m16 16 4.5 4.5" />
+                  </svg>
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+
+                <h3 className="mt-4 text-lg font-semibold text-gray-900">
+                  No vehicles found
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Try a different search or loosen your filters.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="mt-5 rounded-xl bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-500/20"
+                >
+                  Clear search and filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {visible.map((vehicle) => (
+                  <div
+                    key={vehicle.id}
+                    className="min-w-0 rounded-2xl transition duration-200 hover:-translate-y-0.5"
+                  >
+                    <VehicleCard
+                      vehicle={vehicle}
+                      onPurchase={() => setSelectedVehicle(vehicle)}
+                      busy={busyId === vehicle.id}
+                      // favorite={isFavorite(vehicle.id)}
+                      // onToggleFavorite={toggle}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </main>
 
       {selectedVehicle && (

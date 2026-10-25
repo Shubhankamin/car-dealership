@@ -1,112 +1,63 @@
 import type { FormEvent } from "react";
-import type { SearchFilters } from "../api/vehicles";
 
 interface Props {
-  filters: SearchFilters;
-  categories: string[];
-  onChange: (filters: SearchFilters) => void;
-  onSearch: () => void;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-indigo-100";
-
-const textFields: {
-  key: keyof SearchFilters;
-  label: string;
-  placeholder: string;
-  type?: string;
-}[] = [
-  { key: "make", label: "Make", placeholder: "e.g. Toyota" },
-  { key: "model", label: "Model", placeholder: "e.g. Camry" },
-];
-
-const priceFields: {
-  key: keyof SearchFilters;
-  label: string;
-  placeholder: string;
-}[] = [
-  { key: "minPrice", label: "Min price", placeholder: "e.g. 10000" },
-  { key: "maxPrice", label: "Max price", placeholder: "e.g. 50000" },
-];
-
-export default function SearchBar({
-  filters,
-  categories,
-  onChange,
-  onSearch,
-}: Props) {
-  const active = Object.values(filters).some((v) => v && v.trim() !== "");
-
-  function handleSubmit(e: FormEvent) {
+/** The large search field at the top of the dashboard. Results filter as you type. */
+export default function SearchBar({ value, onChange }: Props) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    onSearch();
+    // Filtering is already live; submitting just closes the mobile keyboard.
+    (e.currentTarget.elements.namedItem("q") as HTMLInputElement).blur();
   }
 
   return (
     <form
       role="search"
       onSubmit={handleSubmit}
-      className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[repeat(5,minmax(0,1fr))_auto]"
+      className="relative mx-auto w-full max-w-2xl"
     >
-      {textFields.map(({ key, label, placeholder }) => (
-        <label key={key} className="text-xs font-semibold text-slate-600">
-          {label}
-          <input
-            value={filters[key] ?? ""}
-            placeholder={placeholder}
-            onChange={(e) => onChange({ ...filters, [key]: e.target.value })}
-            className={inputClass}
-          />
-        </label>
-      ))}
+      <svg
+        viewBox="0 0 24 24"
+        className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden="true"
+      >
+        <circle cx="10.5" cy="10.5" r="6.5" />
+        <path d="m16 16 4.5 4.5" strokeLinecap="round" />
+      </svg>
 
-      <label className="text-xs font-semibold text-slate-600">
-        Category
-        <select
-          value={filters.category ?? ""}
-          onChange={(e) => onChange({ ...filters, category: e.target.value })}
-          className={inputClass}
-        >
-          <option value="">All categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </label>
+      <input
+        name="q"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Search vehicles"
+        placeholder="Search make or model…"
+        autoComplete="off"
+        className="h-14 w-full rounded-full border border-slate-200 bg-white pl-14 pr-36 text-base text-gray-900 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.25)] outline-none transition placeholder:text-slate-400 focus:border-orange-400 focus:ring-4 focus:ring-orange-500/15 sm:h-16 sm:text-lg"
+      />
 
-      {priceFields.map(({ key, label, placeholder }) => (
-        <label key={key} className="text-xs font-semibold text-slate-600">
-          {label}
-          <input
-            type="number"
-            min={0}
-            value={filters[key] ?? ""}
-            placeholder={placeholder}
-            onChange={(e) => onChange({ ...filters, [key]: e.target.value })}
-            className={inputClass}
-          />
-        </label>
-      ))}
-
-      <div className="flex items-end gap-2">
+      <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
+        {value && (
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            aria-label="Clear search"
+            className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            ✕
+          </button>
+        )}
         <button
           type="submit"
-          className="flex-1 rounded-xl bg-orange-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
+          className="h-10 rounded-full bg-orange-600 px-5 text-sm font-semibold text-white shadow-lg shadow-orange-600/30 transition hover:bg-orange-700 sm:h-12 sm:px-6"
         >
           Search
         </button>
-        {active && (
-          <button
-            type="button"
-            onClick={() => onChange({})}
-            className="rounded-xl border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50"
-          >
-            Clear
-          </button>
-        )}
       </div>
     </form>
   );
