@@ -8,4 +8,4 @@ coverage/
 .vscode/
 .DS_Store
 .vite/
-uploads/
+/backend/uploads/
