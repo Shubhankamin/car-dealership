@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Vehicle } from "../types";
-
+import { formatPrice } from "../utils/currency";
 interface Props {
   vehicle: Vehicle;
   onPurchase: (id: string) => void;
@@ -9,18 +9,12 @@ interface Props {
   onToggleFavorite?: (id: string) => void;
 }
 
-const priceFormat = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
 export default function VehicleCard({
   vehicle,
   onPurchase,
   busy = false,
-  favorite = false,
-  onToggleFavorite,
+  // favorite = false,
+  // onToggleFavorite,
 }: Props) {
   const [photoFailed, setPhotoFailed] = useState(false);
 
@@ -137,7 +131,7 @@ export default function VehicleCard({
           <div className="mt-4 flex items-end justify-between gap-3">
             <div>
               <p className="text-2xl font-extrabold tracking-tight text-slate-950">
-                {priceFormat.format(vehicle.price)}
+                {formatPrice(vehicle.price)}
               </p>
               <p className="mt-1 text-xs text-slate-500">Listed price</p>
             </div>

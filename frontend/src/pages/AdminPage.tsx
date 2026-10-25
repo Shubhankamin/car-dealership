@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getErrorMessage } from "../api/client";
+import { formatPrice } from "../utils/currency";
 import {
   createVehicle,
   deleteVehicle,
@@ -20,12 +21,6 @@ type DialogState =
   | { mode: "closed" }
   | { mode: "delete"; vehicle: Vehicle }
   | { mode: "restock"; vehicle: Vehicle };
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "INR",
-  maximumFractionDigits: 0,
-});
 
 export default function AdminPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -132,7 +127,7 @@ export default function AdminPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-white-600 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <Navbar />
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
@@ -458,22 +453,31 @@ export default function AdminPage() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-700">
-                              <svg
-                                viewBox="0 0 24 24"
-                                className="h-5 w-5"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                aria-hidden="true"
-                              >
-                                <path
-                                  d="M3 14l2-6h14l2 6M4 14h16v5H4zM7 19v2m10-2v2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </div>
+                            {v.imageUrl ? (
+                              <img
+                                src={v.imageUrl}
+                                alt=""
+                                loading="lazy"
+                                className="h-10 w-14 shrink-0 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-700">
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  className="h-5 w-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M3 14l2-6h14l2 6M4 14h16v5H4zM7 19v2m10-2v2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                            )}
                             <div>
                               <p className="font-semibold text-slate-900">
                                 {v.make} {v.model}
@@ -490,7 +494,7 @@ export default function AdminPage() {
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-4 py-4 font-semibold text-slate-800">
-                          {money.format(v.price)}
+                          {formatPrice(v.price)}
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex flex-col items-start gap-1.5">
@@ -637,7 +641,7 @@ export default function AdminPage() {
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
                   {dialog.vehicle.category} ·{" "}
-                  {money.format(dialog.vehicle.price)}
+                  {formatPrice(dialog.vehicle.price)}
                 </p>
                 <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 text-sm">
                   <span className="text-slate-500">Current stock</span>

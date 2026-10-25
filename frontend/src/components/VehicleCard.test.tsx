@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Vehicle } from "../types";
 import VehicleCard from "./VehicleCard";
+import { formatPrice } from "../utils/currency";
 
 const vehicle: Vehicle = {
   id: "v1",
@@ -17,8 +18,10 @@ describe("VehicleCard", () => {
   it("shows the vehicle details", () => {
     render(<VehicleCard vehicle={vehicle} onPurchase={vi.fn()} />);
 
-    expect(screen.getByText("Toyota Camry")).toBeInTheDocument();
+    // The make is a label and the model is the heading.
+    expect(screen.getByRole("heading", { name: "Camry" })).toBeInTheDocument();
     expect(screen.getByText("Sedan")).toBeInTheDocument();
+    expect(screen.getByText(formatPrice(28500))).toBeInTheDocument();
     expect(screen.getByText(/5 in stock/i)).toBeInTheDocument();
   });
 
@@ -31,7 +34,7 @@ describe("VehicleCard", () => {
     expect(onPurchase).toHaveBeenCalledWith("v1");
   });
 
-  it("disables Purchase and shows Out of stock when quantity is zero", () => {
+  it("disables the button and shows Out of stock when quantity is zero", () => {
     render(
       <VehicleCard
         vehicle={{ ...vehicle, quantity: 0 }}
@@ -39,7 +42,9 @@ describe("VehicleCard", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: /purchase/i })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /currently unavailable/i }),
+    ).toBeDisabled();
     expect(screen.getByText(/out of stock/i)).toBeInTheDocument();
   });
 
@@ -55,20 +60,5 @@ describe("VehicleCard", () => {
       "src",
       "/cars/camry.jpg",
     );
-  });
-
-  it("calls onToggleFavorite with the vehicle id", async () => {
-    const onToggleFavorite = vi.fn();
-    render(
-      <VehicleCard
-        vehicle={vehicle}
-        onPurchase={vi.fn()}
-        onToggleFavorite={onToggleFavorite}
-      />,
-    );
-
-    await userEvent.click(screen.getByRole("button", { name: /favorites/i }));
-
-    expect(onToggleFavorite).toHaveBeenCalledWith("v1");
   });
 });

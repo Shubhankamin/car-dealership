@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { Vehicle, VehicleInput } from "../types";
+import ImageUpload from "./ImageUpload";
 
 interface Props {
   vehicle?: Vehicle;
@@ -10,9 +11,8 @@ interface Props {
 }
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100";
 
-/** Used for both adding (no `vehicle`) and editing (pre-filled). */
 export default function VehicleForm({
   vehicle,
   onSubmit,
@@ -26,15 +26,18 @@ export default function VehicleForm({
   const [quantity, setQuantity] = useState(
     vehicle ? String(vehicle.quantity) : "",
   );
+  const [imageUrl, setImageUrl] = useState(vehicle?.imageUrl ?? "");
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    const photo = imageUrl.trim();
     onSubmit({
       make: make.trim(),
       model: model.trim(),
       category: category.trim(),
       price: Number(price),
       quantity: Number(quantity),
+      ...(photo ? { imageUrl: photo } : {}),
     });
   }
 
@@ -98,6 +101,10 @@ export default function VehicleForm({
           className={inputClass}
         />
       </label>
+
+      <div className="sm:col-span-2">
+        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+      </div>
 
       <div className="flex items-end justify-end gap-2 sm:col-span-2">
         <button

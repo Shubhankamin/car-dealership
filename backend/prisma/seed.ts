@@ -4,12 +4,21 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const vehicles = [
+interface SeedVehicle {
+  make: string;
+  model: string;
+  category: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string;
+}
+
+const vehicles: SeedVehicle[] = [
   {
     make: "Toyota",
     model: "Camry",
     category: "Sedan",
-    price: 28500,
+    price: 4600000,
     quantity: 5,
     imageUrl: "/cars/camry.jpg",
   },
@@ -17,41 +26,31 @@ const vehicles = [
     make: "Honda",
     model: "CR-V",
     category: "SUV",
-    price: 32000,
+    price: 3200000,
     quantity: 3,
-    imageUrl: "/cars/camry.jpg",
+    imageUrl: "/cars/crv2.jpg",
   },
   {
     make: "Ford",
     model: "F-150",
     category: "Truck",
-    price: 41000,
+    price: 9500000,
     quantity: 2,
-    imageUrl: "/cars/camry.jpg",
   },
   {
     make: "Tesla",
     model: "Model 3",
     category: "Electric",
-    price: 39990,
+    price: 6000000,
     quantity: 0,
-    imageUrl: "/cars/camry.jpg",
   },
-  {
-    make: "BMW",
-    model: "M4",
-    category: "Coupe",
-    price: 78000,
-    quantity: 1,
-    imageUrl: "/cars/camry.jpg",
-  },
+  { make: "BMW", model: "M4", category: "Coupe", price: 15000000, quantity: 1 },
   {
     make: "Hyundai",
     model: "i20",
     category: "Hatchback",
-    price: 15000,
+    price: 900000,
     quantity: 8,
-    imageUrl: "/cars/camry.jpg",
   },
 ];
 
@@ -71,12 +70,12 @@ async function main() {
   }
 
   for (const { make, model, imageUrl } of vehicles) {
+    if (!imageUrl) continue;
     await prisma.vehicle.updateMany({
       where: { make, model, imageUrl: null },
       data: { imageUrl },
     });
   }
-
   console.log(`Seeded admin ${email} and ${vehicles.length} sample vehicles`);
 }
 
