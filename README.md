@@ -309,7 +309,7 @@ All vehicles, with stock badges. The Purchase button is disabled when a vehicle 
 
 ### Tools I used
 
-- **Claude (Anthropic), through — my main assistant for the backend and the TDD flow.
+- **Claude (Anthropic)** — my main assistant for the backend and the TDD flow.
 - **ChatGPT (OpenAI)** — used for the UI redesign (the AutoStock theme).
 
 Every commit where an AI tool helped has a `Co-Authored-By` trailer naming the tool. The raw chat logs are in [PROMPTS.md](PROMPTS.md).
