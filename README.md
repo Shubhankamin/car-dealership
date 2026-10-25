@@ -288,7 +288,7 @@ Test Files  5 passed (5)
 
 All vehicles, with stock badges. The Purchase button is disabled when a vehicle is sold out.
 
-![Dashboard](docs/screenshots/dashboard.png)
+![Dashboard](docs/screenshots/dash1.png)
 
 ### Search and filter
 
@@ -296,7 +296,7 @@ All vehicles, with stock badges. The Purchase button is disabled when a vehicle 
 
 ### Admin — manage inventory
 
-![Admin inventory](docs/screenshots/admin.png)
+![Admin inventory](docs/screenshots/admin1.png)
 
 | Add vehicle, with photo upload | Restock | Delete confirmation |
 |---|---|---|
@@ -304,7 +304,7 @@ All vehicles, with stock badges. The Purchase button is disabled when a vehicle 
 
 ### Mobile
 
-<img src="docs/screenshots/mobile.png" alt="Mobile view" width="320" />
+<img src="docs/screenshots/mobile1.png" alt="Mobile view" width="320" />
 
 ## My AI Usage
 
