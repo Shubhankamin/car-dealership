@@ -19,8 +19,8 @@ export default function VehicleCard({
   vehicle,
   onPurchase,
   busy = false,
-  favorite = false,
-  onToggleFavorite,
+  // favorite = false,
+  // onToggleFavorite,
 }: Props) {
   const [photoFailed, setPhotoFailed] = useState(false);
 

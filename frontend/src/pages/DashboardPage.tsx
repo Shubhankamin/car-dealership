@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 import SearchBar from "../components/SearchBar";
 import VehicleCard from "../components/VehicleCard";
 import Loader from "../components/Loader";
-import { useFavorites } from "../hooks/useFavorites";
+// import { useFavorites } from "../hooks/useFavorites";
 import type { Vehicle } from "../types";
 
 type Toast = {
@@ -29,7 +29,7 @@ export default function DashboardPage() {
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestId = useRef(0);
 
-  const { isFavorite, toggle } = useFavorites();
+  // const { isFavorite, toggle } = useFavorites();
 
   const filtered = Object.values(filters).some(
     (value) => typeof value === "string" && value.trim() !== "",
@@ -305,8 +305,8 @@ export default function DashboardPage() {
                     vehicle={vehicle}
                     onPurchase={() => setSelectedVehicle(vehicle)}
                     busy={busyId === vehicle.id}
-                    favorite={isFavorite(vehicle.id)}
-                    onToggleFavorite={toggle}
+                    // favorite={isFavorite(vehicle.id)}
+                    // onToggleFavorite={toggle}
                   />
                 </div>
               ))}
