@@ -33,6 +33,11 @@ export default function AdminPage() {
   const [restockAmount, setRestockAmount] = useState("5");
   const [search, setSearch] = useState("");
 
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
   const load = useCallback(async () => {
     try {
       const data = await listVehicles();
@@ -51,17 +56,26 @@ export default function AdminPage() {
 
   async function run(action: () => Promise<unknown>, success: string) {
     setError(null);
-    setNotice(null);
+    setToast(null);
     setSaving(true);
 
     try {
       await action();
-      setNotice(success);
+
+      setToast({
+        type: "success",
+        message: success,
+      });
+
       setForm({ mode: "closed" });
       setDialog({ mode: "closed" });
+
       await load();
     } catch (err) {
-      setError(getErrorMessage(err));
+      setToast({
+        type: "error",
+        message: getErrorMessage(err),
+      });
     } finally {
       setSaving(false);
     }
@@ -126,9 +140,50 @@ export default function AdminPage() {
     (vehicle) => vehicle.quantity <= 0,
   ).length;
 
+  useEffect(() => {
+    if (!toast) return;
+
+    const timer = window.setTimeout(() => {
+      setToast(null);
+    }, 3500);
+
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Navbar />
+
+      {toast && (
+        <div
+          className="fixed right-4 top-20 z-[100] w-[calc(100%-2rem)] max-w-sm animate-in slide-in-from-right-4 duration-200"
+          role={toast.type === "error" ? "alert" : "status"}
+          aria-live={toast.type === "error" ? "assertive" : "polite"}
+        >
+          <div
+            className={`flex items-start gap-3 rounded-xl border p-4 shadow-xl ${
+              toast.type === "success"
+                ? "border-emerald-200 bg-white text-emerald-800"
+                : "border-red-200 bg-white text-red-800"
+            }`}
+          >
+            <span className="text-lg font-bold" aria-hidden="true">
+              {toast.type === "success" ? "✓" : "!"}
+            </span>
+
+            <p className="flex-1 text-sm font-medium">{toast.message}</p>
+
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="rounded-md px-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              aria-label="Dismiss notification"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         {/* Header */}
