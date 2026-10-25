@@ -8,7 +8,6 @@ Administrators can add, edit, delete and restock vehicles, and upload vehicle ph
 - **Frontend:** single-page app in React, TypeScript, Tailwind CSS and Vite
 - **Tests:** Jest and Supertest on the backend, Vitest and Testing Library on the frontend
 
-> **Live demo:** _coming soon_
 
 ---
 
