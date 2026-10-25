@@ -36,6 +36,7 @@ const vehicles: SeedVehicle[] = [
     category: "Truck",
     price: 9500000,
     quantity: 2,
+    imageUrl: "/cars/ford_150.jpg",
   },
   {
     make: "Tesla",
@@ -43,14 +44,23 @@ const vehicles: SeedVehicle[] = [
     category: "Electric",
     price: 6000000,
     quantity: 0,
+    imageUrl: "/cars/tesla.png",
   },
-  { make: "BMW", model: "M4", category: "Coupe", price: 15000000, quantity: 1 },
+  {
+    make: "BMW",
+    model: "M4",
+    category: "Coupe",
+    price: 15000000,
+    quantity: 1,
+    imageUrl: "/cars/bmw_m4.jpeg",
+  },
   {
     make: "Hyundai",
     model: "i20",
     category: "Hatchback",
     price: 900000,
     quantity: 8,
+    imageUrl: "/cars/i20.jpg",
   },
 ];
 
