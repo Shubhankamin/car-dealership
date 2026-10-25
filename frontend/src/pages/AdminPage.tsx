@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getErrorMessage } from "../api/client";
+import { formatPrice } from "../utils/currency";
 import {
   createVehicle,
   deleteVehicle,
@@ -20,12 +21,6 @@ type DialogState =
   | { mode: "closed" }
   | { mode: "delete"; vehicle: Vehicle }
   | { mode: "restock"; vehicle: Vehicle };
-
-const money = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "INR",
-  maximumFractionDigits: 0,
-});
 
 export default function AdminPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -499,7 +494,7 @@ export default function AdminPage() {
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-4 py-4 font-semibold text-slate-800">
-                          {money.format(v.price)}
+                          {formatPrice(v.price)}
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex flex-col items-start gap-1.5">
@@ -646,7 +641,7 @@ export default function AdminPage() {
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
                   {dialog.vehicle.category} ·{" "}
-                  {money.format(dialog.vehicle.price)}
+                  {formatPrice(dialog.vehicle.price)}
                 </p>
                 <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 text-sm">
                   <span className="text-slate-500">Current stock</span>

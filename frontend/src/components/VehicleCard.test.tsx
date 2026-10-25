@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Vehicle } from "../types";
 import VehicleCard from "./VehicleCard";
+import { formatPrice } from "../utils/currency";
 
 const vehicle: Vehicle = {
   id: "v1",
@@ -20,7 +21,7 @@ describe("VehicleCard", () => {
     // The make is a label and the model is the heading.
     expect(screen.getByRole("heading", { name: "Camry" })).toBeInTheDocument();
     expect(screen.getByText("Sedan")).toBeInTheDocument();
-    expect(screen.getByText("$28,500")).toBeInTheDocument();
+    expect(screen.getByText(formatPrice(28500))).toBeInTheDocument();
     expect(screen.getByText(/5 in stock/i)).toBeInTheDocument();
   });
 
