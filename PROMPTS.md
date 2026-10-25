@@ -9,11 +9,15 @@ How I used each tool is described in the [My AI Usage](README.md#my-ai-usage) se
 
 Used for the backend, the TDD test suites, the frontend setup, and debugging.
 
-https://claude.ai/chat/1a0a27a2-3e02-4048-ac7b-43384c090e6a
+
+https://claude.ai/share/1112f2e0-7084-4dd9-97a7-d97aa338ca31
 
 ## ChatGPT (OpenAI)
 
 Used for the AutoStock UI redesign.
+
+https://chatgpt.com/share/6adde01e-e574-83ec-94da-bf535afb6500
+
 
 prompt: this is my current ui, i need a modern ui for this project
 Ai response:
